@@ -3,7 +3,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from datetime import datetime, timedelta
-import schedule
 from bson.json_util import dumps
 
 # Create your views here.
@@ -33,7 +32,7 @@ def get_bookings(request):
         date = request.GET.get('date') 
         bookings = Booking.find({"date":date})
         bookings_json = dumps(bookings)
-        return JsonResponse({'error':False,'message':'Success',"data":bookings_json},status = 200)
+        return JsonResponse({'error':False,'message':'Success',"data":json.loads(bookings_json)},status = 200)
     else:
         return JsonResponse({'error':True,'message':'invalid request'},status = 400)
 
