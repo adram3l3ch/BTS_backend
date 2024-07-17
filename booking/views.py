@@ -16,11 +16,13 @@ def create_booking(request):
             'vehicle.number':data["vehicle"]['number'],
             'date':data["date"]
             })
+        existing_booking_id = Booking.find_one({'booking_id':data['booking_id']})
+        if existing_booking_id:
+            return JsonResponse({'error':True,'message':'Booking Id already exists'},status = 403)
         if existing_booking:
             return JsonResponse({'error':True,'message':'Vehicle no exists for given date'},status = 403)
-        else:
-            Booking.insert_one(data)
-            return JsonResponse({'error':False,'message':'Booking Successful'},status = 201)
+        Booking.insert_one(data)
+        return JsonResponse({'error':False,'message':'Booking Successful'},status = 201)
     else:
         return JsonResponse({'error':True,'message':'invalid request'},status = 400)
 
@@ -36,8 +38,32 @@ def get_bookings(request):
     else:
         return JsonResponse({'error':True,'message':'invalid request'},status = 400)
 
+@csrf_exempt
+def update_status(request):
+    if request.method == 'PATCH':
+        data = json.loads(request.body)
+        booking = Booking.find_one_and_update( {'booking_id': data['booking_id']},{'$set': {'status': data['status']}}
+)
+        if bool(booking):
+            return JsonResponse({'error':False,'message':'Updated successfully'},status = 200)
+        else:
+            return JsonResponse({'error':True,'message':'Invalid Booking Id'}, status = 404)
+    else:
+        return JsonResponse({'error':True,'message':'invalid request'},status = 400)
 
 
 
 
 
+@csrf_exempt
+def delete_booking(request):
+    if request.method == 'DELETE':
+        booking_id = request.GET.get('booking_id')
+        booking = Booking.delete_one({'booking_id':booking_id})
+
+        if bool(booking):
+            return JsonResponse({'error':False,'message':'Booking Deleted'},status = 200)
+        else:
+            return JsonResponse({'error':True,'message':'Invalid Booking Id'},status = 404)
+    else:
+        return JsonResponse({'error':True,'message':'invalid request'},status = 400)
