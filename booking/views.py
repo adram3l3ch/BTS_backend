@@ -21,6 +21,9 @@ def create_booking(request):
             return JsonResponse({'error':True,'message':'Booking Id already exists'},status = 403)
         if existing_booking:
             return JsonResponse({'error':True,'message':'Vehicle no exists for given date'},status = 403)
+        no_of_bookings = Booking.count_documents({'date':data['date'], 'plant':data['plant'] })
+        if no_of_bookings >=3:
+            data['status'] = 'Waiting List'
         Booking.insert_one(data)
         return JsonResponse({'error':False,'message':'Booking Successful'},status = 201)
     else:
