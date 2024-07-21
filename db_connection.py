@@ -1,5 +1,7 @@
 import pymongo
-url = "mongodb+srv://rahuljames669:rahul%401999@pythonprojects.fwqjmcz.mongodb.net/?retryWrites=true&w=majority&appName=PythonProjects"
+import os
+
+url = os.getenv("MONGO_URI")
 client = pymongo.MongoClient(url)
 db = client["BTS"]
 

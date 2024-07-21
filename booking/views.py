@@ -19,7 +19,7 @@ def create_booking(request):
         existing_booking_id = Booking.find_one({'booking_id':data['booking_id']})
         if existing_booking_id:
             return JsonResponse({'error':True,'message':'Booking Id already exists'},status = 403)
-        if existing_booking:
+        if (existing_booking and not data["forced"]):
             return JsonResponse({'error':True,'message':'Vehicle no exists for given date'},status = 403)
         no_of_bookings = Booking.count_documents({'date':data['date'], 'plant':data['plant'] })
         if no_of_bookings >=20:
