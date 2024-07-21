@@ -70,3 +70,16 @@ def delete_booking(request):
             return JsonResponse({'error':True,'message':'Invalid Booking Id'},status = 404)
     else:
         return JsonResponse({'error':True,'message':'invalid request'},status = 400)
+    
+@csrf_exempt
+def add_comment(request):
+    if request.method == 'PATCH':
+        data = json.loads(request.body)
+        booking = Booking.find_one_and_update({'booking_id':data['booking_id']},{'$set':{'comment': data['comment']}})
+        
+        if bool(booking):
+            return JsonResponse({'error':False,'message':'Updated successfully'},status = 200)
+        else:
+            return JsonResponse({'error':True,'message':'Invalid Booking Id'}, status = 404)
+    else:
+        return JsonResponse({'error':True,'message':'invalid request'},status = 400)
